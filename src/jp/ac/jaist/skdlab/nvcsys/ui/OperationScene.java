@@ -74,7 +74,7 @@ public class OperationScene {
 		tileMembers.setPadding(new Insets(10, 0, 10, 0));
 		tileMembers.setPrefColumns(1);
 		tileMembers.setPrefWidth(columWidth);
-		grid.add(tileMembers, 0, 1);					// column 0, row 1
+		grid.add(tileMembers, 0, 1, 1, 2);				// column 0(1), row 1(2)
 		
 		// ToggleGroup
 		toggleGroup = new ToggleGroup();
@@ -94,13 +94,13 @@ public class OperationScene {
 		buttonHandGestured = new Button("Hand gestured");
 		buttonHandGestured.setOnAction(new ButtonHandGesturedHandler());
 		buttonHandGestured.setPrefWidth(columWidth);
-		grid.add(buttonHandGestured, 1, 1);
+		grid.add(buttonHandGestured, 1, 1);				// column 1, row 1
 		
 		// Button "Gestured"
 		buttonGestured = new Button("Gestured");
 		buttonGestured.setOnAction(new ButtonGesturedHandler());
 		buttonGestured.setPrefWidth(columWidth);
-		grid.add(buttonGestured, 1, 2);
+		grid.add(buttonGestured, 1, 2);					// column 1, row 2
 		
 		// Button "Down all"
 		buttonDownAll = new Button("Down all");
@@ -134,6 +134,10 @@ public class OperationScene {
 	 * @param memberList Current discussion member list
 	 */
 	public synchronized void setMembers(List<String> memberList) {
+		
+		if (tileMembers == null) {
+			return;
+		}
 		
 		// PreProcess: Clear local users
 		int numberOfItems = tileMembers.getChildren().size();

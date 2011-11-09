@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javafx.application.Platform;
+
 import jp.ac.jaist.skdlab.nvcsys.ui.OperationScene;
 import jp.ac.jaist.skdlab.nvcsys.ui.StartScene;
 
@@ -138,6 +140,11 @@ public class NVCClient implements Runnable {
 			while (token.hasMoreTokens()) {
 				discussionUserList.add(token.nextToken());
 			}
+			
+			// Out me (operator)
+			if (discussionUserList.contains(NVCClient.name)) {
+				discussionUserList.remove(NVCClient.name);
+			}
 		}
 		
 		else if (name.equals("ADDD_R")) {
@@ -161,12 +168,23 @@ public class NVCClient implements Runnable {
 				if (!discussionUserList.contains(value)) {
 					discussionUserList.add(value);					
 				}
+				// Out me (operator)
+				if (discussionUserList.contains(NVCClient.name)) {
+					discussionUserList.remove(NVCClient.name);
+				}
 			}
 			
 			// Update status string at OperationScene
 			if (currentScene instanceof OperationScene) {
 				((OperationScene) currentScene).setStatus(
 						"[Entered] " + value);
+//				Platform.runLater(new Runnable() {
+//					@Override public void run() {
+//						((OperationScene) currentScene).setMembers(
+//								discussionUserList);
+//					}
+//				});
+				new JFXSetMembersThread().start();
 			}
 		}
 		
@@ -175,7 +193,7 @@ public class NVCClient implements Runnable {
 			
 			if (value != null && discussionUserList != null) {
 				if (discussionUserList.contains(value)) {
-					discussionUserList.remove(value);									
+					discussionUserList.remove(value);
 				}
 			}
 
@@ -183,6 +201,13 @@ public class NVCClient implements Runnable {
 			if (currentScene instanceof OperationScene) {
 				((OperationScene) currentScene).setStatus(
 						"[Leaved] " + value);
+//				Platform.runLater(new Runnable() {
+//					@Override public void run() {
+//						((OperationScene) currentScene).setMembers(
+//								discussionUserList);
+//					}
+//				});
+				new JFXSetMembersThread().start();
 			}
 		}
 		
@@ -253,5 +278,18 @@ public class NVCClient implements Runnable {
 	
 	public List<String> getDiscussionUserList() {
 		return discussionUserList;
+	}
+	
+	class JFXSetMembersThread extends Thread {
+		
+		@Override
+		public void run() {
+			Platform.runLater(new Runnable() {
+				@Override public void run() {
+					((OperationScene) currentScene).setMembers(
+							discussionUserList);
+				}
+			});
+		}
 	}
 }
