@@ -8,7 +8,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Toggle;
@@ -41,8 +40,8 @@ public class OperationScene {
 	private ToggleGroup toggleGroup = null;
 	private List<ToggleButton> buttonMemberList = null;
 	
-	private static final String toggleButtonStyle = "-fx-text-fill: red";
-	
+	private double columWidth = (JFXUtility.WIDTH / 2) - 10;
+		
 	public OperationScene(NVCOperatorJFX parent) {
 		this.parent = parent;
 		NVCClient.setCurrentShowingScene(this);
@@ -56,7 +55,6 @@ public class OperationScene {
 	public Pane getContent() {
 		
 		Font font = new Font("Arial", 16);
-		double columWidth = (JFXUtility.WIDTH / 2) - 10;
 		
 		BorderPane border = new BorderPane();
 		border.setTop(JFXUtility.createTitleHBox("Operation menu"));
@@ -71,10 +69,12 @@ public class OperationScene {
 		
 		// TilePane
 		tileMembers = new TilePane();
-		tileMembers.setPadding(new Insets(10, 0, 10, 0));
-		tileMembers.setPrefColumns(1);
+//		tileMembers.setPrefColumns(1);
 		tileMembers.setPrefWidth(columWidth);
-		grid.add(tileMembers, 0, 1, 1, 2);				// column 0(1), row 1(2)
+		tileMembers.setPrefHeight(130);
+//		tileMembers.setHgap(10);
+		tileMembers.setVgap(10);
+		grid.add(tileMembers, 0, 1, 1, 3);				// column 0(1), row 1(2)
 		
 		// ToggleGroup
 		toggleGroup = new ToggleGroup();
@@ -84,7 +84,8 @@ public class OperationScene {
 		// ToggleButton "Remote"
 		ToggleButton tb0 = new ToggleButton(NVCOperation.REMOTE_NAME);
 		tb0.setToggleGroup(toggleGroup);
-		tb0.setStyle(toggleButtonStyle);
+		tb0.setStyle("-fx-base: salmon");
+		tb0.setPrefWidth(columWidth - 20);
 		tb0.setSelected(false);
 		buttonMemberList = new ArrayList<ToggleButton>();
 		buttonMemberList.add(tb0);
@@ -105,12 +106,12 @@ public class OperationScene {
 		// Button "Down all"
 		buttonDownAll = new Button("Down all");
 		buttonDownAll.setOnAction(new ButtonDownAllHandler());
-		grid.add(buttonDownAll, 1, 3);					// column 1, row 2
+		grid.add(buttonDownAll, 1, 4);					// column 1, row 4
 		
 		// Button "Disconnect"
 		buttonDisconnect = new Button("End discussion");
 		buttonDisconnect.setOnAction(new ButtonDisconnectHandler());
-		grid.add(buttonDisconnect, 0, 3);				// column 0, row 2
+		grid.add(buttonDisconnect, 0, 4);				// column 0, row 4
 		
 		// 
 		border.setCenter(grid);
@@ -145,8 +146,8 @@ public class OperationScene {
 			return;
 		} else {
 			// Remove
-			for (int i = 1; i < numberOfItems; i++) {
-				tileMembers.getChildren().remove(i);
+			while (tileMembers.getChildren().size() > 1) {
+				tileMembers.getChildren().remove(1);
 			}
 		}
 		
@@ -154,9 +155,39 @@ public class OperationScene {
 		for (String s : memberList) {
 			ToggleButton tb = new ToggleButton(s);
 			tb.setToggleGroup(toggleGroup);
-			tb.setStyle(toggleButtonStyle);
+			tb.setStyle("-fx-base: lightgreen");
+			tb.setPrefWidth(columWidth - 20);
 			buttonMemberList.add(tb);
 			tileMembers.getChildren().add(tb);
+		}
+	}
+	
+	public synchronized void enterMember(String name) {
+		
+		if (tileMembers == null) {
+			return;
+		}
+		
+		ToggleButton tb = new ToggleButton(name);
+		tb.setToggleGroup(toggleGroup);
+		tb.setStyle("-fx-base: lightgreen");
+		tb.setPrefWidth(columWidth - 20);
+		buttonMemberList.add(tb);
+		tileMembers.getChildren().add(tb);
+	}
+	
+	public synchronized void leaveMember(String name) {
+		
+		if (tileMembers == null) {
+			return;
+		}
+		
+		for (int i = 0; i < buttonMemberList.size(); i++) {
+			ToggleButton tb = buttonMemberList.get(i);
+			if (tb.getText().equals(name)) {
+				buttonMemberList.remove(tb);
+				return;
+			}
 		}
 	}
 	
@@ -215,7 +246,7 @@ public class OperationScene {
 				// Button released
 			} else {
 				if (toggle2 instanceof ToggleButton) {
-					NVCOperation.getInstance().setCurrentTalkingCommunicator(
+					NVCOperation.getInstance().setCurrentTalkingMember(
 							((ToggleButton) toggle2).getText());					
 				}
 			}

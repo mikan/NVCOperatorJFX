@@ -9,11 +9,11 @@ import javafx.stage.Stage;
  * Non-verbal communication support system - PC Client program (for operator)
  * 
  * @author Yutaka Kato
- * @version 0.0.2
+ * @version 0.2.0
  */
 public class NVCOperatorJFX extends Application {
 	
-	public static final String VERSION = "0.0.2";
+	public static final String VERSION = "0.1.0";
 	public static final int STATE_DISCONNECTED = 100;
 	public static final int STATE_PREDISCUSSING = 200;
 	public static final int STATE_DISCUSSING = 300;

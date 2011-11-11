@@ -37,9 +37,9 @@ public class JFXUtility {
 		// Top label
 		final Label labelAppTitle = new Label(title);
 		labelAppTitle.setFont(new Font("Arial", 30));
+		labelAppTitle.setStyle("-fx-text-fill: white;");
 		HBox box = new HBox();
-		box.setStyle("-fx-background-color: #336699;" +
-				"-fx-text-fill: white");
+		box.setStyle("-fx-background-color: #336699;");
 		box.getChildren().add(labelAppTitle);
 		box.setPadding(new Insets(10, 10, 10, 10));
 		box.setPrefHeight(HEIGHT_TOP);
